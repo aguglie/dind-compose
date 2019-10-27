@@ -17,7 +17,7 @@ stages:
   - build
 
 docker-build-dev:
-  image: guglio/dind-compose:test
+  image: guglio/dind-compose:latest
   stage: build
   services:
     - docker:19.03.4-dind
