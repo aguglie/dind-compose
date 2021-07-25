@@ -7,27 +7,22 @@ docker-compose version 1.24.1, build 4667896
 ```
 
 ##  Gitlab-ci boilerplate
-`.gitlab-ci.yml` working example: builds an image and pushes it to gitlab's container registry. Notice the usage of cache to reduce build time.
+`.gitlab-ci.yml` working example: builds an image and pushes it to gitlab's container registry.
 
 ```yaml
-variables:
-  SLUG_APP_IMAGE_DEV_TAG: $CI_REGISTRY_IMAGE/java:dev
-
 stages:
   - build
 
-docker-build-dev:
+docker-build-master:
   image: guglio/dind-compose:latest
   stage: build
   services:
     - docker:19.03.4-dind
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-    - git clone https://myPrivateDependency ./dependencies/xyz
   script:
-    - docker pull $SLUG_APP_IMAGE_DEV_TAG || true
-    - docker build --cache-from $SLUG_APP_IMAGE_DEV_TAG --tag $SLUG_APP_IMAGE_DEV_TAG ./java
-    - docker push "$SLUG_APP_IMAGE_DEV_TAG"
+    - docker build --tag "$CI_REGISTRY_IMAGE" .
+    - docker push "$CI_REGISTRY_IMAGE"
   only:
-    - dev
+    - master
 ```
